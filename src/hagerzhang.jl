@@ -249,7 +249,8 @@ function hagerzhang!{T}(df,
             phic, dphic, f_up, g_up = linefunc!(df, x, s, c, xtmp, g, true)
             f_calls += f_up
             g_calls += g_up
-            @assert isfinite(phic) && isfinite(dphic)
+            isfinite(phic) || throw(LineSearchException("f($c)=$phic, aborting Linesearch", c, f_calls, g_calls, lsr))
+            isfinite(dphic) || throw(LineSearchException("∇f($c)=$dphic, aborting Linesearch", c, f_calls, g_calls, lsr))
             push!(lsr, c, phic, dphic)
             # ia, ib = update(phi, lsr, iA, iB, length(lsr), philim) # TODO: Pass options
             ia, ib, f_up, g_up = update!(df, x, s, xtmp, g, lsr, iA, iB, length(lsr), philim, display)
@@ -324,7 +325,8 @@ function secant2!{T}(df,
     phic, dphic, f_up, g_up = linefunc!(df, x, s, c, xtmp, g, true)
     f_calls += f_up
     g_calls += g_up
-    @assert isfinite(phic) && isfinite(dphic)
+    isfinite(phic) || throw(LineSearchException("f($c)=$phic, aborting Linesearch", c, f_calls, g_calls, lsr))
+    isfinite(dphic) || throw(LineSearchException("∇f($c)=$dphic, aborting Linesearch", c, f_calls, g_calls, lsr))
     push!(lsr, c, phic, dphic)
     ic = length(lsr)
     if satisfies_wolfe(c, phic, dphic, phi0, dphi0, philim, delta, sigma)
@@ -358,7 +360,8 @@ function secant2!{T}(df,
         phic, dphic, f_up, g_up = linefunc!(df, x, s, c, xtmp, g, true)
         f_calls += f_up
         g_calls += g_up
-        @assert isfinite(phic) && isfinite(dphic)
+        isfinite(phic) || throw(LineSearchException("f($c)=$phic, aborting Linesearch", c, f_calls, g_calls, lsr))
+        isfinite(dphic) || throw(LineSearchException("∇f($c)=$dphic, aborting Linesearch", c, f_calls, g_calls, lsr))
         push!(lsr, c, phic, dphic)
         ic = length(lsr)
         # Check arguments here
@@ -461,7 +464,8 @@ function bisect!{T}(df,
         phid, gphi, f_up, g_up = linefunc!(df, x, s, d, xtmp, g, true)
         f_calls += f_up
         g_calls += g_up
-        @assert isfinite(phid) && isfinite(gphi)
+        isfinite(phid) || throw(LineSearchException("f($d)=$phid, aborting Linesearch", d, f_calls, g_calls, lsr))
+        isfinite(gphi) || throw(LineSearchException("∇f($d)=$gphi, aborting Linesearch", d, f_calls, g_calls, lsr))
         push!(lsr, d, phid, gphi)
         id = length(lsr)
         if gphi >= 0
